@@ -1,37 +1,51 @@
-name: Eth Holdings Scraper Automation
+name: Daily ETH Holdings Scraper 
 
 on:
   schedule:
-    - cron: "0 0 * * *" # Runs daily at 12:00 AM UTC
-  workflow_dispatch: # Allows manual triggers
+    - cron: '0 1 * * *'  # Runs daily at 01:00 UTC
+  workflow_dispatch:     # Allows manual trigger from GitHub UI
 
 jobs:
-  scrape_aum:
+  run-scraper:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
+    - name:  Checkout repo
       uses: actions/checkout@v3
 
-    - name: Set Up Python
+    - name:  Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: 3.9
+        python-version: '3.10'
 
-    - name: Install Dependencies
+    - name:  Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install selenium beautifulsoup4 pandas webdriver-manager
+        pip install pandas numpy requests beautifulsoup4 selenium lxml
 
-    - name: Run Eth Holdings Scraper
-      run: python eth_holdings.py
+    - name:  Install Chrome & ChromeDriver
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wget unzip xvfb libxi6 libgconf-2-4
+        sudo apt-get install -y libnss3 libxss1 libappindicator1 libindicator7
+        sudo apt-get install -y fonts-liberation libatk-bridge2.0-0 libgtk-3-0
+        wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+        sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt-get -fy install
+        CHROME_VERSION=$(google-chrome --version | grep -oP "\d+\.\d+\.\d+\.\d+")
+        CHROMEDRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE)
+        wget -N https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip
+        unzip chromedriver_linux64.zip
+        chmod +x chromedriver
+        sudo mv -f chromedriver /usr/local/bin/chromedriver
 
-    - name: Commit and Push Changes
+    - name:  Run ETH scraper
+      run: |
+        python eth_holdings.py
+
+    - name:  Commit CSV if changed
       run: |
         git config user.name "github-actions[bot]"
-        git config user.email "<>"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
         git add eth_holdings_data.csv
-        git commit -m "Automated Eth Holdings Data Update"
+        git diff --cached --quiet || git commit -m " Update ETH holdings data"
         git push
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
