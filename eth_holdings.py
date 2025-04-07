@@ -29,7 +29,7 @@ def fetch_and_store_9009():
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
 
-    driver = webdriver.Chrome(options=chrome_options)
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
     # Navigate to the URL
     url_9009 = 'https://www.bosera.com.hk/en-US/products/fund/detail/ETHL'
