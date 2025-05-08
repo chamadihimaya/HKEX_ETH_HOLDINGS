@@ -147,7 +147,7 @@ def fetch_and_store_9179():
 
     # Locate the price
     all_tds_9009 = soup_9009.find_all('td', {'class': 'ant-table-cell'})
-    price = all_tds_9009[145].get_text(strip=True)
+    price = all_tds_9009[3].get_text(strip=True)
     print(price)
     price = float(price.replace(',', ''))
 
