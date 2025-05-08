@@ -219,7 +219,7 @@ def fetch_price():
 
     # Extract the price
     all_tds_9009 = soup_9009.find_all('td', {'class': 'ant-table-cell'})
-    price = all_tds_9009[145].get_text(strip=True)
+    price = all_tds_9009[3].get_text(strip=True)
     price = float(price.replace(',', ''))
 
     # Extract the date
