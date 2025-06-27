@@ -28,7 +28,7 @@ logging.info("🌸 Starting AUM + ETH holdings scraper")
 
 
 # ------------------ File Path ------------------
-csv_file_path = "eth_holdings.csv"
+csv_file_path = "eth_holdings_summary.csv"
 
 
 # In[6]:
