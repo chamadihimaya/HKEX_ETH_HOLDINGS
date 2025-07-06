@@ -1,34 +1,37 @@
-name: Daily ETH Holdings Scraper
+name: ETH HOLDINGS Scraper Automation
 
 on:
   schedule:
-    - cron: '0 6 * * *'  # Runs every day at 6 AM UTC (~11:30 AM Sri Lanka)
-  workflow_dispatch:     # Allow manual runs from GitHub UI
+    - cron: "0 0 * * *" # Runs daily at 12:00 AM UTC
+  workflow_dispatch: # Allows manual triggers
 
 jobs:
-  run-script:
+  scrape_aum:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🧙 Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout Repository
+      uses: actions/checkout@v3
 
-      - name: 🐍 Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
+    - name: Set Up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
 
-      - name: 📦 Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install selenium beautifulsoup4 pandas webdriver-manager
 
-      - name: 🧪 Run script
-        run: |
-          python eth_holdings_scraper.py
+    - name: Run ETH HOLDINGS Scraper
+      run: python eth_holdings_scraper.py
 
-      - name: 💾 Upload output CSV (optional)
-        uses: actions/upload-artifact@v4
-        with:
-          name: eth_holdings_summary
-          path: eth_holdings_summary.csv
+    - name: Commit and Push Changes
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "<>"
+        git add aeth_holdings_summary.csv
+        git commit -m "Automated Eth Holdings Data Update"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
